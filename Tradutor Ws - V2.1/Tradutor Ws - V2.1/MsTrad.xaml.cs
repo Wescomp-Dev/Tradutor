@@ -22,9 +22,9 @@ namespace Tradutor_Ws___V2._1
     /// 
     public class TradutorSaida
     {
-        public string text { get; set; }
+        public string Texto { get; set; }
         public string To { get; set; }
-        public string language { get; set; }
+        public string Language { get; set; }
     }
 
     public class ListaId
@@ -35,9 +35,11 @@ namespace Tradutor_Ws___V2._1
 
     public partial class MsTrad : Window
     {
-        private static readonly string subscriptionKey = "b38bee5190mshb800f582c906e34p1004efjsn1d9fef204f63";
-        private static readonly string endpoint = "https://microsoft-translator-text.p.rapidapi.com/";
-        private static readonly string location = "AWS - ap-southeast-1";
+        private readonly string subscriptionKey = "b38bee5190mshb800f582c906e34p1004efjsn1d9fef204f63";
+        private readonly string endpoint = "https://microsoft-translator-text.p.rapidapi.com/";
+        private readonly string location = "AWS - ap-southeast-1";
+        private Dictionary<string, string> DicIdioma = new Dictionary<string, string>();
+        private List<ListaId> lista = new List<ListaId>();
         
         public MsTrad()
         {
@@ -48,7 +50,7 @@ namespace Tradutor_Ws___V2._1
         //Preenche os combo box com os idiomas
         private void PreencheCombo()
         {
-            var DicIdioma = new Dictionary<string, string>(); DicIdioma.Clear();
+            DicIdioma.Clear();
             var client = new HttpClient();
             var request = new HttpRequestMessage();
             request.Method = HttpMethod.Get;
@@ -110,30 +112,23 @@ namespace Tradutor_Ws___V2._1
         //Traduz o texto inserido no campo de entrada
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            String Ie = TextIdiomaDetect.Text; //Idioma de entrada
+            string Ie = TextIdiomaDetect.Text; //Idioma de entrada
             string Is = TextIdSaida.Text; //Idioma de saida
-            string route = "translate?to="+Is+"&api-version=3.0&from="+Ie+"&profanityAction=NoAction&textType=plain";    
             string textToTranslate = TextFrom.Text;
             object[] body = new object[] { new { Text = textToTranslate } };
             var requestBody = JsonConvert.SerializeObject(body);
             var client = new HttpClient();
             var request = new HttpRequestMessage();
             request.Method = HttpMethod.Post;
-            request.RequestUri = new Uri(endpoint + route);
+            request.RequestUri = new Uri(endpoint + "translate?to="+Is+"&api-version=3.0&from="+Ie+"&profanityAction=NoAction&textType=plain");
             request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
             request.Headers.Add("x-rapidapi-key", subscriptionKey);
             request.Headers.Add("x-rapidapi-Region", location);
             HttpResponseMessage thing = client.SendAsync(request).Result;
             string actualResponse = thing.Content.ReadAsStringAsync().Result;
-            var Saida = JsonConvert.DeserializeObject(actualResponse);
-            string S = Saida.ToString();
-            S = S.Remove(0, 48);
-            S = S.Remove(S.Length - 23);
-            S = S.Replace("\"", "'");
-            string json = @"{" + S + "}";
+            string json = @"{" + JsonConvert.DeserializeObject(actualResponse).ToString().Remove(0, 48).Remove(S.Length - 23).Replace("\"", "'").ToString() + "}";
             TradutorSaida tradu = JsonConvert.DeserializeObject<TradutorSaida>(json);
-            string name = tradu.text;
-            TextTo.Text = name;
+            TextTo.Text = tradu.Texto;
         }
 
         //Detecta o idioma inserido
@@ -151,14 +146,9 @@ namespace Tradutor_Ws___V2._1
             request.Headers.Add("x-rapidapi-Region", location);
             HttpResponseMessage thing = client.SendAsync(request).Result;
             string actualResponse = thing.Content.ReadAsStringAsync().Result;
-            var Saida = JsonConvert.DeserializeObject(actualResponse);
-            string S = Saida.ToString();
-            S = S.Remove(0, 10);
-            S = S.Remove(S.Length - 7);
-            S = S.Replace("\"", "'");
-            string json = @"{" + S + "}";
+            string json = @"{" + JsonConvert.DeserializeObject(actualResponse).ToString().Remove(0, 10).Remove(S.Length - 7).Replace("\"", "'").ToString() + "}";
             TradutorSaida tradu = JsonConvert.DeserializeObject<TradutorSaida>(json);
-            TextIdiomaDetect.Text = tradu.language;
+            TextIdiomaDetect.Text = tradu.Language;
             SelecionaIdioma();
         }
 
@@ -167,7 +157,7 @@ namespace Tradutor_Ws___V2._1
         {           
             string Ss = TextSaidaIdioma.Text;
             string json = @"" + Ss + "";
-            var lista = new List<ListaId>(); lista.Clear();
+            lista.Clear();
             using (var reader = new JsonTextReader(new StringReader(json)))
             {
                 string id = string.Empty;
@@ -219,18 +209,14 @@ namespace Tradutor_Ws___V2._1
 
         private void TextFrom_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {      
-            if (TextFrom.Text.Length.Equals(10))
-            {
-                DetectaIdioma();              
-            }          
+            if (TextFrom.Text.Length.Equals(10)) { DetectaIdioma(); }          
         }
 
         //Seleciona o idioma de saida no combo
         private void CboTo_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            string Ss = TextSaidaIdioma.Text;
-            string json = @"" + Ss + "";
-            var lista = new List<ListaId>(); lista.Clear();
+            string json = @"" + TextSaidaIdioma.Text + "";
+            lista.Clear();
             using (var reader = new JsonTextReader(new StringReader(json)))
             {
                 string id = string.Empty;
@@ -284,7 +270,7 @@ namespace Tradutor_Ws___V2._1
         private void CboFrom_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             var json = @"" + TextSaidaIdioma.Text + "";
-            var lista = new List<ListaId>(); lista.Clear();
+            lista.Clear();
             using (var reader = new JsonTextReader(new StringReader(json)))
             {
                 string id = string.Empty;
