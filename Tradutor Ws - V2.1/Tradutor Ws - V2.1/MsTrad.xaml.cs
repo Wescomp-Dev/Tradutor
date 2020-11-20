@@ -28,12 +28,6 @@ namespace Tradutor_Ws___V2._1
              
 
     }
-public class DicIdioma
-    {
-        public string CodD { get; set; }
-        public string NomeD { get; set; }
-
-    }
 
     public class ListaId
     {
@@ -53,13 +47,10 @@ public class DicIdioma
 
         private static readonly string location = "AWS - ap-southeast-1";
 
-
         public MsTrad()
         {
-            
             InitializeComponent();
             PreencheCombo();
-
         }
 
         //Preenche os combo box com os idiomas
@@ -75,29 +66,20 @@ public class DicIdioma
             request.Headers.Add("accept-language", "pt");
             request.Headers.Add("x-rapidapi-key", subscriptionKey);
             request.Headers.Add("x-rapidapi-host", "microsoft-translator-text.p.rapidapi.com");
-
-
             HttpResponseMessage thing = client.SendAsync(request).Result;
             string actualResponse = thing.Content.ReadAsStringAsync().Result;
-
             var Saida = JsonConvert.DeserializeObject(actualResponse);
-
             string S = Saida.ToString();
             S = S.Replace("\"", "'");
-
             TextSaidaIdioma.Text = S;
             String Ss = TextSaidaIdioma.Text;
-
             string json = @"" + Ss + "";
-
-
             var DicIdioma = new Dictionary<string, string>();
             DicIdioma.Clear();
             using (var reader = new JsonTextReader(new StringReader(json)))
             {
                 string id = string.Empty;
                 string nome = string.Empty;
-
                 var i = 0;
                 while (reader.Read())
                 {
@@ -112,20 +94,15 @@ public class DicIdioma
                             case "nativeName": i++; break;
                             case "dir": break;
                             default: id = reader.Value.ToString(); break;
-
                         }
                     }
                     if (reader.TokenType == JsonToken.String)
                     {
-
                         if (i == 1)
                         {
-
                             nome = reader.Value.ToString() + Environment.NewLine;
                             i = -1;
                             DicIdioma.Add(id, nome);
-
-
                         }
                     }
                 }
