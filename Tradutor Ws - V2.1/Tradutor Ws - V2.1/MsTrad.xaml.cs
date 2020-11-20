@@ -98,12 +98,12 @@ namespace Tradutor_Ws___V2._1
                 {
                     CboFrom.SelectedIndex = 0;
                     CboTo.SelectedIndex = 0;
-                    var Dic = DicIdioma.Values.ToList();
-                    Dic.Sort();
-                    foreach (var Value in Dic)
+                    var idiomas = DicIdioma.Values.ToList();
+                    idiomas.Sort();
+                    foreach (var idioma in idiomas)
                     {
-                        CboFrom.Items.Add(Value);
-                        CboTo.Items.Add(Value);
+                        CboFrom.Items.Add(idioma);
+                        CboTo.Items.Add(idioma);
                     }
                 }
             }
@@ -155,8 +155,7 @@ namespace Tradutor_Ws___V2._1
         //Seleciona o Idioma detectado
         void SelecionaIdioma()
         {           
-            string Ss = TextSaidaIdioma.Text;
-            string json = @"" + Ss + "";
+            string json = @"" + TextSaidaIdioma.Text + "";
             lista.Clear();
             using (var reader = new JsonTextReader(new StringReader(json)))
             {
@@ -195,12 +194,12 @@ namespace Tradutor_Ws___V2._1
             {
                 if (lista.Count > 0)
                 {
-                    foreach (var It in lista)
+                    foreach (var item in lista)
                     {
-                        if (TextIdiomaDetect.Text == It.Cod)
+                        if (TextIdiomaDetect.Text == item.Cod)
                         {
-                            LblIdiFrom.Content = "Traduzindo do idioma: " + It.Nome;
-                            CboFrom.SelectedValue = It.Nome;
+                            LblIdiFrom.Content = "Traduzindo do idioma: " + item.Nome;
+                            CboFrom.SelectedValue = item.Nome;
                         }
                     }
                 }
@@ -255,11 +254,11 @@ namespace Tradutor_Ws___V2._1
             {
                 if (lista.Count > 0)
                 {
-                    foreach (var It in lista)
+                    foreach (var item in lista)
                     {
-                        if (CboTo.SelectedValue.ToString() == It.Nome)
+                        if (CboTo.SelectedValue.ToString() == item.Nome)
                         {
-                            TextIdSaida.Text = It.Cod;
+                            TextIdSaida.Text = item.Cod;
                         }
                     }
                 }
@@ -308,12 +307,12 @@ namespace Tradutor_Ws___V2._1
             {
                 if (lista.Count > 0)
                 {
-                    foreach (var It in lista)
+                    foreach (var item in lista)
                     {
-                        if (CboFrom.SelectedValue.ToString() == It.Nome)
+                        if (CboFrom.SelectedValue.ToString() == item.Nome)
                         {
-                            TextIdiomaDetect.Text = It.Cod;
-                            LblIdiFrom.Content = "Traduzindo do idioma: " + It.Nome;
+                            TextIdiomaDetect.Text = item.Cod;
+                            LblIdiFrom.Content = "Traduzindo do idioma: " + item.Nome;
                         }
                     }
                 }
