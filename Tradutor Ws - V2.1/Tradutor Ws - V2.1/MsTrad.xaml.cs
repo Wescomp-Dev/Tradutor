@@ -48,24 +48,19 @@ namespace Tradutor_Ws___V2._1
         //Preenche os combo box com os idiomas
         private void PreencheCombo()
         {
-            string route = "languages?api-version=3.0";
+            var DicIdioma = new Dictionary<string, string>(); DicIdioma.Clear();
             var client = new HttpClient();
             var request = new HttpRequestMessage();
             request.Method = HttpMethod.Get;
-            request.RequestUri = new Uri(endpoint + route);
+            request.RequestUri = new Uri(endpoint + "languages?api-version=3.0");
             request.Headers.Add("accept-language", "pt");
             request.Headers.Add("x-rapidapi-key", subscriptionKey);
             request.Headers.Add("x-rapidapi-host", "microsoft-translator-text.p.rapidapi.com");
             HttpResponseMessage thing = client.SendAsync(request).Result;
-            string actualResponse = thing.Content.ReadAsStringAsync().Result;
-            var Saida = JsonConvert.DeserializeObject(actualResponse);
-            string S = Saida.ToString();
-            S = S.Replace("\"", "'");
-            TextSaidaIdioma.Text = S;
-            String Ss = TextSaidaIdioma.Text;
-            string json = @"" + Ss + "";
-            var DicIdioma = new Dictionary<string, string>();
-            DicIdioma.Clear();
+            var actualResponse = thing.Content.ReadAsStringAsync().Result;
+            TextSaidaIdioma.Text = JsonConvert.DeserializeObject(actualResponse).Totring().Replace("\"", "'").toString();
+            var json = @"" + TextSaidaIdioma.Text + "";
+            
             using (var reader = new JsonTextReader(new StringReader(json)))
             {
                 string id = string.Empty;
@@ -90,7 +85,7 @@ namespace Tradutor_Ws___V2._1
                         if (i == 1)
                         {
                             i = -1;
-                            DicIdioma.Add(id, reader.Value.ToString() + Environment.NewLine);
+                            DicIdioma.Add(id, reader.Value.ToString());
                         }
                     }
                 }
@@ -144,14 +139,13 @@ namespace Tradutor_Ws___V2._1
         //Detecta o idioma inserido
        private void DetectaIdioma()
         {
-            string route = "Detect?api-version=3.0";
             string textToTranslate = TextFrom.Text;
-            object[] body = new object[] { new { Text = textToTranslate } };
+            var body = new object[] { new { Text = textToTranslate } };
             var requestBody = JsonConvert.SerializeObject(body);
             var client = new HttpClient();
             var request = new HttpRequestMessage();
             request.Method = HttpMethod.Post;
-            request.RequestUri = new Uri(endpoint + route);
+            request.RequestUri = new Uri(endpoint + "Detect?api-version=3.0");
             request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
             request.Headers.Add("x-rapidapi-key", subscriptionKey);
             request.Headers.Add("x-rapidapi-Region", location);
@@ -164,18 +158,16 @@ namespace Tradutor_Ws___V2._1
             S = S.Replace("\"", "'");
             string json = @"{" + S + "}";
             TradutorSaida tradu = JsonConvert.DeserializeObject<TradutorSaida>(json);
-            string name = tradu.language;
-            TextIdiomaDetect.Text = name;
+            TextIdiomaDetect.Text = tradu.language;
             SelecionaIdioma();
         }
 
         //Seleciona o Idioma detectado
         void SelecionaIdioma()
         {           
-            String Ss = TextSaidaIdioma.Text;
+            string Ss = TextSaidaIdioma.Text;
             string json = @"" + Ss + "";
-            var lista = new List<ListaId>();
-            lista.Clear();
+            var lista = new List<ListaId>(); lista.Clear();
             using (var reader = new JsonTextReader(new StringReader(json)))
             {
                 string id = string.Empty;
@@ -291,10 +283,8 @@ namespace Tradutor_Ws___V2._1
         // Seleciona o idioma de entrada no combo
         private void CboFrom_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            string Ss = TextSaidaIdioma.Text;
-            string json = @"" + Ss + "";
-            var lista = new List<ListaId>();
-            lista.Clear();
+            var json = @"" + TextSaidaIdioma.Text + "";
+            var lista = new List<ListaId>(); lista.Clear();
             using (var reader = new JsonTextReader(new StringReader(json)))
             {
                 string id = string.Empty;
